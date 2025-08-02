@@ -25,7 +25,7 @@ public class CategoryController : Controller
         return Ok(categories);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [Produces("application/json")]
     public async Task<ActionResult<Category>> GetCategoryById(int id)
     {
@@ -38,7 +38,7 @@ public class CategoryController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult<Category>> CreateCategory(CategoryCreateDto categoryDto)
+    public async Task<ActionResult<Category>> CreateCategory([FromBody] CategoryCreateDto categoryDto)
     {
 
         var createdCategory = await _categoryInterface.CreateCategory(categoryDto);
@@ -49,5 +49,29 @@ public class CategoryController : Controller
         }
 
         return createdCategory;
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody]CategoryUpdateDto categoryDto)
+    {
+        var updatedCategory = await _categoryInterface.UpdateCategory(id, categoryDto);
+        if (updatedCategory == null)
+        {
+            return NotFound("Categoria não encontrada ou erro ao atualizar.");
+        }
+        return Ok(updatedCategory);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<bool>> DeleteCategory(int id)
+    {
+        var deleteCategory = await _categoryInterface.DeleteCategory(id);
+
+        if(!deleteCategory)
+        {
+            return NotFound("Categoria não encontrada ou erro na exclusão.");
+        }
+
+        return NoContent();
     }
 }

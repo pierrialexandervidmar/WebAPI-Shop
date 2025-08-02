@@ -58,19 +58,74 @@ namespace Shop.Services.Category
 
         }
 
-        public Task<Category> GetCategoryById(int id)
+        public async Task<Category> GetCategoryById(int id)
         {
-            throw new NotImplementedException();
+            Category category = new Category();
+
+            try
+            {
+                category = await _context.Categories.FindAsync(id);
+
+                if (category == null)
+                {
+                    return null;
+                }
+
+                return category;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Houve um erro ao buscar a categoria. Tente novamente mais tarde. Erro: " + ex.Message);
+            }
         }
 
-        public Task<Category> UpdateCategory(int id, CategoryUpdateDto categoryUpdateDto)
+        public async Task<Category> UpdateCategory(int id, CategoryUpdateDto categoryUpdateDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+
+                if (category == null)
+                {
+                    return null;
+                }
+
+                category.Name = categoryUpdateDto.Name;
+                _context.Categories.Update(category);
+
+                await _context.SaveChangesAsync();
+
+                // return category;
+                return category;
+
+            } catch (Exception ex)
+            {
+                throw new Exception("Houve um erro ao atualizar a categoria. Tente novamente mais tarde. Erro: " + ex.Message);
+            }
         }
 
-        public Task<bool> DeleteCategory(int id)
+        public async Task<bool> DeleteCategory(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+
+                if (category == null)
+                {
+                    return false;
+                }
+
+                _context.Categories.Remove(category);
+
+                await _context.SaveChangesAsync();
+
+                // return category;
+                return true;
+
+            } catch (Exception ex)
+            {
+                throw new Exception("Houve um erro ao excluir a categoria. Tente novamente mais tarde. Erro: " + ex.Message);
+            }
         }
     }
 }
