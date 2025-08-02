@@ -40,6 +40,10 @@ public class CategoryController : Controller
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory([FromBody] CategoryCreateDto categoryDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
         var createdCategory = await _categoryInterface.CreateCategory(categoryDto);
 
@@ -54,6 +58,11 @@ public class CategoryController : Controller
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody]CategoryUpdateDto categoryDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var updatedCategory = await _categoryInterface.UpdateCategory(id, categoryDto);
         if (updatedCategory == null)
         {

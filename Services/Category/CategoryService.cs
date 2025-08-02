@@ -90,7 +90,11 @@ namespace Shop.Services.Category
                     return null;
                 }
 
-                category.Name = categoryUpdateDto.Name;
+                if (!string.IsNullOrWhiteSpace(categoryUpdateDto.Name))
+                {
+                    category.Name = categoryUpdateDto.Name;
+                }
+
                 _context.Categories.Update(category);
 
                 await _context.SaveChangesAsync();
