@@ -1,12 +1,12 @@
-﻿using Shop.Dto.Product;
+﻿using Shop.Dto.ProductDto;
 using Shop.Models;
 
 public interface IProductInterface
 {
-    Task<List<Product>> GetAllProducts();
-    Task<Product> GetProductById(int id);
-    Task<Product> CreateProduct(ProductCreateDto productDto);
-    Task<Product> UpdateProduct(int id, ProductUpdateDto productDto);
+    Task<List<ProductResponseDto>> GetAllProducts();
+    Task<ProductResponseDto> GetProductById(int id);
+    Task<ProductResponseDto> CreateProduct(ProductCreateDto productDto);
+    Task<ProductResponseDto> UpdateProduct(int id, ProductUpdateDto productDto);
     Task<bool> DeleteProduct(int id);
 }
 

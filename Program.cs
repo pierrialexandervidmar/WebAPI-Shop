@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
 using Shop.Services.Category;
+using Shop.Services.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 // Register the ICategoryInterface service
 builder.Services.AddScoped<ICategoryInterface, CategoryService>();
+builder.Services.AddScoped<IProductInterface, ProductService>();
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

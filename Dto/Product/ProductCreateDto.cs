@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shop.Dto.Product
+namespace Shop.Dto.ProductDto
 {
     public class ProductCreateDto
     {
@@ -19,6 +19,5 @@ namespace Shop.Dto.Product
         [Required(ErrorMessage = "A categoria é obrigatória.")]
         [Range(1, int.MaxValue, ErrorMessage = "Selecione uma categoria válida.")]
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
     }
 }
