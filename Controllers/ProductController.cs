@@ -26,15 +26,17 @@ namespace Shop.Controllers
             return Ok(products);
         }
 
-        //[HttpGet("{id:int}")]
-        //[Produces("application/json")]
-        //public async Task<ActionResult<ProductResponseDto>> GetProductById(int id)
-        //{
-        //    var product = await _productInterface.GetProductById(id);
-        //    if (product == null || product.Id == 0)
-        //        return NotFound("Produto não encontrado.");
-        //    return Ok(product);
-        //}
+        [HttpGet("{id:int}")]
+        [Produces("application/json")]
+        public async Task<ActionResult<ProductResponseDto>> GetProductById(int id)
+        {
+            var product = await _productInterface.GetProductById(id);
+
+            if (product == null)
+                return NotFound(new { message = "Produto não encontrado." });
+            
+            return Ok(product);
+        }
 
         [HttpPost]
         public async Task<ActionResult<ProductResponseDto>> CreateProduct([FromBody] ProductCreateDto productDto)
@@ -43,12 +45,15 @@ namespace Shop.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
             var createdProduct = await _productInterface.CreateProduct(productDto);
+
             if (createdProduct == null)
             {
-                return StatusCode(500, new { message = "Erro ao criar o produto." });
+                return UnprocessableEntity(new { message = "Erro ao criar o produto." });
             }
-            return StatusCode(201, createdProduct);
+
+            return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
         }
 
         //[HttpPut("{id:int}")]

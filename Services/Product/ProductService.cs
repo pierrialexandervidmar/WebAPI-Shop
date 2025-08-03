@@ -25,7 +25,7 @@ public class ProductService : IProductInterface
 
             if(category == null)
             {
-                throw new ArgumentException("Categoria não encontrada.");
+                return null;
             }
 
             var product = new Product
@@ -97,9 +97,36 @@ public class ProductService : IProductInterface
         }
     }
 
-    public Task<ProductResponseDto> GetProductById(int id)
+    public async Task<ProductResponseDto> GetProductById(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var product = await _context.Products
+                .Include(product => product.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null)
+                return null;
+
+            var productDto = new ProductResponseDto
+            {
+                Id = product.Id,
+                Title = product.Title,
+                Description = product.Description,
+                Price = product.Price,
+                Category = new CategoryResponseDto
+                {
+                    Id = product.Category.Id,
+                    Name = product.Category.Name
+                }
+            };
+
+            return productDto;
+
+        } catch(Exception ex)
+        {
+            throw new InvalidOperationException("Não foi encontrado nenhum produto, ou alguma exceção encontrada.", ex);
+        }
     }
 
     public Task<ProductResponseDto> UpdateProduct(int id, ProductUpdateDto productDto)
