@@ -23,19 +23,19 @@ public class CategoryService : ICategoryInterface
 
         try
         {
-            categories = await _context.Categories.ToListAsync();
+            categories = await _context.Categories.AsNoTracking().OrderBy(c => c.Id).ToListAsync();
 
             return categories;
         }
         catch (Exception ex)
         {
-            throw new Exception("Houve um erro ao buscar as categorias. Tente novamente mais tarde. Erro: " + ex.Message);
+            throw new Exception(
+                "Houve um erro ao buscar as categorias. Tente novamente mais tarde. Erro: " + ex.Message);
         }
     }
 
     public async Task<Category> CreateCategory(CategoryCreateDto categoryCreationDto)
     {
-
         try
         {
             var category = new Category();
@@ -47,15 +47,11 @@ public class CategoryService : ICategoryInterface
 
             // return category;
             return category;
-
         }
         catch (Exception ex)
         {
             throw new Exception("Houve um erro ao criar a categoria. Tente novamente mais tarde. Erro: " + ex.Message);
         }
-
-
-
     }
 
     public async Task<Category> GetCategoryById(int id)
@@ -101,10 +97,11 @@ public class CategoryService : ICategoryInterface
 
             // return category;
             return category;
-
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
-            throw new Exception("Houve um erro ao atualizar a categoria. Tente novamente mais tarde. Erro: " + ex.Message);
+            throw new Exception("Houve um erro ao atualizar a categoria. Tente novamente mais tarde. Erro: " +
+                                ex.Message);
         }
     }
 
@@ -125,10 +122,11 @@ public class CategoryService : ICategoryInterface
 
             // return category;
             return true;
-
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
-            throw new Exception("Houve um erro ao excluir a categoria. Tente novamente mais tarde. Erro: " + ex.Message);
+            throw new Exception("Houve um erro ao excluir a categoria. Tente novamente mais tarde. Erro: " +
+                                ex.Message);
         }
     }
 }

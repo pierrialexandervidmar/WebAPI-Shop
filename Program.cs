@@ -17,10 +17,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICategoryInterface, CategoryService>();
 builder.Services.AddScoped<IProductInterface, ProductService>();
 
-
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();

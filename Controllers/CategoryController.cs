@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Shop.Dto.Category;
 using Shop.Models;
@@ -52,11 +51,15 @@ public class CategoryController : Controller
             return StatusCode(500, new { message = "Erro ao criar a categoria." });
         }
 
-        return createdCategory;
+        return CreatedAtAction(
+            nameof(GetCategoryById),
+            new { id = createdCategory.Id },
+            createdCategory
+        );
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody]CategoryUpdateDto categoryDto)
+    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] CategoryUpdateDto categoryDto)
     {
         if (!ModelState.IsValid)
         {
@@ -66,8 +69,9 @@ public class CategoryController : Controller
         var updatedCategory = await _categoryInterface.UpdateCategory(id, categoryDto);
         if (updatedCategory == null)
         {
-            return NotFound("Categoria não encontrada ou erro ao atualizar.");
+            return NotFound("Categoria nï¿½o encontrada ou erro ao atualizar.");
         }
+
         return Ok(updatedCategory);
     }
 
@@ -76,9 +80,9 @@ public class CategoryController : Controller
     {
         var deleteCategory = await _categoryInterface.DeleteCategory(id);
 
-        if(!deleteCategory)
+        if (!deleteCategory)
         {
-            return NotFound("Categoria não encontrada ou erro na exclusão.");
+            return NotFound("Categoria nï¿½o encontrada ou erro na exclusï¿½o.");
         }
 
         return NoContent();

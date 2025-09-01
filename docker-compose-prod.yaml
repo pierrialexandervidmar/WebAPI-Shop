@@ -1,0 +1,73 @@
+﻿services:
+  postgres:
+    image: postgres:16
+    container_name: shop_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-shop_api}
+      POSTGRES_USER: ${POSTGRES_USER:-shop_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shop_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-shop_user} -d ${POSTGRES_DB:-shop_api}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shop_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-shop_api};Username=${POSTGRES_USER:-shop_user};Password=${POSTGRES_PASSWORD:-shop_password};Pooling=true"
+    volumes:
+      - ./Shop:/src
+    ports:
+      - "${APP_PORT:-5014}:8080"
+    restart: unless-stopped
+    
+    
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build          # usa a imagem SDK (tem o .NET SDK)
+    working_dir: /src
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-shop_api};Username=${POSTGRES_USER:-shop_user};Password=${POSTGRES_PASSWORD:-shop_password};Pooling=true"
+    command: >
+      bash -lc "
+        dotnet tool install --global dotnet-ef --version 8.0.11 &&
+        export PATH=\"$$PATH:/root/.dotnet/tools\" &&
+        dotnet ef database update --project Shop.csproj
+      "
+
+
+
+
+  pgadmin:
+    image: dpage/pgadmin4:8.11
+    container_name: shop_pgadmin
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-8050}:80"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
